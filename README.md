@@ -13,7 +13,7 @@
 - [Docker и файловая система](labs/docker-fs/README.md): образ `ghcr.io/nikolaykochubeev/itmo-component-lab:307482`.
 - [Кастомный Web Component](labs/page-preview/README.md): опубликованный `@nikolay1010110101/page-preview@1.0.1`, пример использования и браузерные тесты.
 
-Для сдачи в форумах Moodle требуется членство в группе курса. Публикация npm-пакета требует аккаунта на npmjs.com.
+Обе работы опубликованы в форумах Moodle для группы ALnew_2026 и ожидают проверки преподавателем.
 
 ## Доклад
 

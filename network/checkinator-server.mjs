@@ -42,8 +42,13 @@ export function createCheckinatorServer({ usersBase, logger = event => console.l
   return app;
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const port = Number(process.env.PORT || 30480);
+export function startCheckinatorServer({ env = process.env, ...options } = {}) {
+  const port = Number(env.PORT || 30480);
+  const host = env.HOST || '127.0.0.1';
   if (!Number.isInteger(port) || port < 0 || port > 65535) throw new Error('Invalid PORT');
-  createCheckinatorServer().listen(port, '127.0.0.1');
+  return createCheckinatorServer(options).listen(port, host);
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  startCheckinatorServer();
 }

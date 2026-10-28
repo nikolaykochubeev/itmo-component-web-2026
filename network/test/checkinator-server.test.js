@@ -60,3 +60,19 @@ test('exposes only checker routes, forwards the real numeric ID and logs no requ
   assert.ok(!JSON.stringify(logs).includes('must-not'));
   assert.ok(!JSON.stringify(logs).includes('private'));
 });
+
+test('binds to the configured Render interface and keeps loopback as the local default', async (t) => {
+  assert.equal(typeof module.startCheckinatorServer, 'function', 'runtime startup must use HOST and PORT');
+  for (const mode of [
+    { env: { PORT: '0' }, expectedHost: '127.0.0.1' },
+    { env: { PORT: '0', HOST: '0.0.0.0' }, expectedHost: '0.0.0.0' }
+  ]) {
+    const app = module.startCheckinatorServer({ env: mode.env, logger: () => {} });
+    t.after(() => new Promise(resolve => app.close(resolve)));
+    await once(app, 'listening');
+    assert.equal(app.address().address, mode.expectedHost);
+    const response = await fetch(`http://127.0.0.1:${app.address().port}/`);
+    assert.equal(response.status, 200);
+    assert.equal(await response.text(), 'checkinator ready');
+  }
+});
