@@ -1,0 +1,32 @@
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #182639;
+  background: #f6f5f0;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { width: min(660px, 100%); margin: 0 auto; padding: 64px 28px; }
+.eyebrow { color: #425d75; font-size: 14px; font-weight: 650; }
+h1 { font-size: clamp(40px, 7vw, 60px); line-height: 1.06; letter-spacing: -0.045em; margin: 28px 0 22px; }
+.intro { color: #42516a; font-size: 20px; line-height: 1.5; margin-bottom: 36px; }
+form { display: flex; flex-direction: column; gap: 12px; }
+label { font-size: 16px; font-weight: 650; }
+input, button { font: inherit; min-height: 52px; border-radius: 6px; }
+input { padding: 12px 14px; border: 1px solid #8c99a5; background: #fff; color: #182639; }
+input[aria-invalid='true'] { border-color: #a53030; }
+button { padding: 12px 20px; color: #fff; background: #234f6b; border: 1px solid #234f6b; font-weight: 650; cursor: pointer; }
+button:hover:enabled { background: #183b52; }
+button:disabled { background: #697f8f; border-color: #697f8f; cursor: wait; }
+input:disabled { opacity: .7; }
+:focus-visible { outline: 3px solid #bc7610; outline-offset: 3px; }
+.message { margin: 8px 0 0; padding: 14px 0; font-size: 17px; line-height: 1.45; }
+.error { color: #982d2d; }
+.success { color: #216143; }
+aside { margin-top: 40px; padding-top: 22px; border-top: 1px solid #cbd0ce; color: #4b5a67; }
+h2 { font-size: 16px; color: #182639; }
+aside p { font-size: 14px; line-height: 1.6; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #234f6b; overflow-wrap: anywhere; }

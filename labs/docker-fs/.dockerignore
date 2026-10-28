@@ -1,0 +1,8 @@
+node_modules
+test
+scripts
+README.md
+verification.txt
+*.tgz
+.git
+.env*

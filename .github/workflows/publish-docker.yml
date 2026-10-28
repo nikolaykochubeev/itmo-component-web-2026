@@ -1,0 +1,42 @@
+name: Publish Docker laboratory
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test filesystem contract
+        run: npm test
+        working-directory: labs/docker-fs
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build, test and publish linux/amd64 image
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/itmo-component-lab:307482"
+          docker buildx build --platform linux/amd64 --load --tag "$image" \
+            --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}" labs/docker-fs
+          fixture_dir="$(mktemp -d)"
+          trap 'rm -rf "$fixture_dir"' EXIT
+          mkdir -p "$fixture_dir/docs" "$fixture_dir/empty"
+          printf abc > "$fixture_dir/a.txt"
+          printf 12345 > "$fixture_dir/docs/b.txt"
+          actual="$(docker run --rm --network none --read-only --mount "type=bind,source=$fixture_dir,target=/data,readonly" "$image")"
+          test "$actual" = '307482-2-2-8'
+          docker push "$image"
+          printf 'Published %s\n' "$image" >> "$GITHUB_STEP_SUMMARY"

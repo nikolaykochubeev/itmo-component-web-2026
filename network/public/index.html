@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fetch — практические упражнения</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <main>
+    <p>Компонентное веб-программирование · Николай Кочубеев</p>
+    <h1>Практика fetch</h1>
+    <section>
+      <h2>1. Два запроса с задержкой</h2>
+      <p>Сначала выполняются запросы по очереди, затем оба запускаются через <code>Promise.all</code>. Замер включает чтение тела каждого ответа.</p>
+      <ul><li><a href="https://web-scriptor.ru/sleep/?n=7">Задержка 7 секунд</a></li><li><a href="https://node-server.ru/r/fivesec">Задержка 5 секунд</a></li></ul>
+      <button id="benchmark">Измерить время</button>
+      <pre id="benchmark-output" aria-live="polite">Ожидается около 12 секунд для последовательных запросов и 7 секунд для конкурентных. Фактическое время зависит от сети.</pre>
+    </section>
+    <section>
+      <h2>2. Время Санкт-Петербурга</h2>
+      <p>Клиент получает HTML <a href="https://www.worldtimeserver.com/current_time_in_RU-SPE.aspx?city=Saint_Petersburg">WorldTimeServer</a> через свой сервер <code>/api/time</code> и извлекает часы, минуты и секунды из <code>#theTime</code>.</p>
+      <button id="get-time">Получить время</button>
+      <output id="clock" aria-live="polite">--:--:--</output>
+      <p>Это время в момент ответа источника. Обновление выполняется по кнопке.</p>
+    </section>
+    <section>
+      <h2>Чекинатор fetch</h2>
+      <p><a href="/login">/login</a> возвращает <code>nkochubeev</code>. <a href="/id/1">/id/1</a> извлекает <code>login</code> из ответа <code>https://nd.kodaktor.ru/users/1</code>. Исходящий GET не содержит <code>Content-Type</code>.</p>
+      <p><a href="/translator/">Открыть финальный React-проект</a></p>
+    </section>
+  </main>
+</body>
+</html>

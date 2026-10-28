@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Проверка page-preview</title>
+<script type="module" src="../src/page-preview.js"></script>
+<style>
+  body { margin: 3rem auto; max-width: 48rem; padding: 0 1rem; font: 16px/1.6 system-ui; background: #edf3f5; color: #152a37; }
+  page-preview { margin: 1rem 0; }
+  button { margin: .3rem; padding: .5rem .8rem; font: inherit; }
+  code { overflow-wrap: anywhere; }
+</style>
+<h1>Предпросмотр HTML-страницы</h1>
+<p>Первый компонент загружает страницу; второй показывает обработку HTTP 404.</p>
+<page-preview id="preview" src="./example.html"></page-preview>
+<page-preview src="./missing.html"></page-preview>
+<p>Поменять страницу первого компонента:</p>
+<button data-src="./example.html">Пример</button>
+<button data-src="./other.html">Другая страница</button>
+<button data-src="./empty.html">Без метаданных</button>
+<button data-src="./unsafe.html">Текст с HTML</button>
+<p>Состояние: <output id="state"></output></p>
+<script type="module">
+  const preview = document.getElementById('preview');
+  document.querySelectorAll('button[data-src]').forEach(button => {
+    button.addEventListener('click', () => preview.setAttribute('src', button.dataset.src));
+  });
+  const update = () => { document.getElementById('state').textContent = preview.dataset.status; };
+  new MutationObserver(update).observe(preview, { attributes: true, attributeFilter: ['data-status'] });
+  update();
+</script>
+</html>

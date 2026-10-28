@@ -1,0 +1,5 @@
+node_modules/
+test-data/
+*.tgz
+.env*
+verification.txt

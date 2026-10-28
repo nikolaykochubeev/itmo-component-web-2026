@@ -1,0 +1,17 @@
+{
+  "name": "course-48-page-preview-local",
+  "version": "1.0.0",
+  "description": "Custom element for previewing an HTML page",
+  "private": true,
+  "type": "module",
+  "exports": "./src/page-preview.js",
+  "files": ["src", "README.md", "LICENSE"],
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "demo": "node scripts/serve.mjs",
+    "prepare:publish": "node scripts/prepare-publish.mjs"
+  },
+  "devDependencies": { "playwright": "1.62.1" }
+}

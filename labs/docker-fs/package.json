@@ -1,0 +1,12 @@
+{
+  "name": "course-48-docker-fs-local",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "configure": "node scripts/configure.mjs",
+    "test:docker": "node scripts/test-docker.mjs"
+  }
+}

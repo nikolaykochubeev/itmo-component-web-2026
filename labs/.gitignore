@@ -1,0 +1,5 @@
+.serena/
+**/node_modules/
+**/test-data/
+**/*.tgz
+.DS_Store
