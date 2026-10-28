@@ -8,6 +8,14 @@ export function createProxyParams(text, languageCode) {
 }
 
 export function readLookupResult(data) {
-  const translation = data && data.def && data.def[0] && data.def[0].tr && data.def[0].tr[0];
+  const translations = data && data.def && data.def[0] && data.def[0].tr;
+  let translation = translations && translations[0];
+  if (Array.isArray(translations)) {
+    for (const candidate of translations.slice(1)) {
+      const frequency = candidate && Number.isFinite(candidate.fr) ? candidate.fr : -Infinity;
+      const selectedFrequency = translation && Number.isFinite(translation.fr) ? translation.fr : -Infinity;
+      if (frequency > selectedFrequency) translation = candidate;
+    }
+  }
   return translation && translation.text ? translation.text : 'Перевод не найден.';
 }
