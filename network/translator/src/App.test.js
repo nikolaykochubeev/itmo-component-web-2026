@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import axios from 'axios';
+import Field from './components/field';
 
 process.env.REACT_APP_TRANSLATE_ENDPOINT = 'https://dictionary.test/lookup';
 process.env.REACT_APP_YANDEX_DICTIONARY_KEY = '';
@@ -51,6 +52,31 @@ test('ordinary typing sends the entered word without a prefilled prefix', async 
   expect(input.value).toBe('кот');
   expect(container.querySelector('h1').textContent).toBe('cat');
   expect(container.textContent).not.toContain('Контрольный вариант:');
+});
+
+test('a native input event after direct value assignment requests and displays the new word', async () => {
+  await act(async () => { ReactDOM.render(<App />, container); });
+  const input = container.querySelector('input');
+
+  await act(async () => {
+    input.value = 'кот';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+
+  expect(request).toHaveBeenCalledTimes(1);
+  expect(request.mock.calls[0][1].params).toEqual({ text: 'кот', lang: 'ru-en', ui: 'ru' });
+  expect(container.querySelector('h1').textContent).toBe('cat');
+});
+
+test('React change and native input handlers report one change for the same event', async () => {
+  const onChange = jest.fn();
+  await act(async () => { ReactDOM.render(<Field value="" onChange={onChange} label="Word" />, container); });
+  const input = container.querySelector('input');
+
+  await act(async () => { enterValue(input, 'кот'); });
+
+  expect(onChange).toHaveBeenCalledTimes(1);
+  expect(onChange).toHaveBeenCalledWith('кот');
 });
 
 test('an empty field makes no request and clearing a word clears the translation', async () => {

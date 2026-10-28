@@ -7,7 +7,11 @@ export default ({ label, value, onChange }) => {
       <input
         className="input"
         value={value}
-        onChange={e => onChange(e.target.value)}
+        onInput={e => onChange(e.target.value)}
+        onChange={e => {
+          // Native input is handled above; keep the React change fallback without duplicates.
+          if (e.nativeEvent.type !== 'input') onChange(e.target.value);
+        }}
       />
     </div>
   );
