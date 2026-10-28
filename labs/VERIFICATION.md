@@ -36,7 +36,7 @@ PASS linux/amd64; read-only /data; network disabled; original ISU untouched
 
 ## Workflow и ограничения сдачи
 
-`.github/workflows/publish-docker.yml` проверен YAML-парсером и `bash -n`; публикационный блок не выполнялся. Он требует ручного запуска в GitHub, использует `GITHUB_TOKEN` с `packages: write`, собирает `linux/amd64` и проверяет контейнер перед push.
+`.github/workflows/publish-docker.yml` проверен YAML-парсером и `bash -n`. Затем выполнен [GitHub Actions run 40611625286](https://github.com/nikolaykochubeev/itmo-component-web-2026/actions/runs/40611625286), результат `success`. Он использует `GITHUB_TOKEN` с `packages: write`, собирает `linux/amd64` и проверяет контейнер перед push. Опубликован точный тег `ghcr.io/nikolaykochubeev/itmo-component-lab:307482`, digest `sha256:c8a96cad085bbd4e0e9622d4e3a6c50722fa02efc03b813dce211f7162a228c9`. Анонимный запрос pull-token вернул HTTP 401; публичный доступ пока не включён.
 
 Read-only состояние аккаунтов: GitHub login `nikolaykochubeev` доступен, у текущей gh-сессии не заявлен `write:packages`; `npm whoami` вернул `ENEEDAUTH`. ИСУ подтвержден пользователем. Для npmjs нужны создание аккаунта владельцем, его вход/2FA и принадлежащий ему scope. GitHub npm registry не заменяет явно указанный в PDF npmjs.
 
