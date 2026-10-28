@@ -27,7 +27,7 @@
 
 ## Размещение
 
-Исходники сохранены в публичном репозитории [itmo-component-web-2026](https://github.com/nikolaykochubeev/itmo-component-web-2026). Docker-образ `ghcr.io/nikolaykochubeev/itmo-component-lab:307482` загружен, [workflow завершился успешно](https://github.com/nikolaykochubeev/itmo-component-web-2026/actions/runs/40611625286). Доступ к самому GHCR-пакету пока закрыт; его публичность настраивается отдельно в GitHub.
+Исходники сохранены в публичном репозитории [itmo-component-web-2026](https://github.com/nikolaykochubeev/itmo-component-web-2026). Docker-образ `ghcr.io/nikolaykochubeev/itmo-component-lab:307482` [доступен публично](https://github.com/nikolaykochubeev/itmo-component-web-2026/pkgs/container/itmo-component-lab), [workflow завершился успешно](https://github.com/nikolaykochubeev/itmo-component-web-2026/actions/runs/40611625286). Проверены анонимное скачивание без сохранённых учётных данных и запуск скачанного образа без сети с доступом к файловой системе только на чтение.
 
 [Сервис fetch](https://nkochubeev-fetch-course48.redcharm32.chatgpt.site/) развёрнут публично в Sites. `/login` возвращает точный логин, `/id/7` получил от учебного API значение `Игорь`. При отправке URL в Moodle проверятор возвращает `TypeError: Cannot read properties of undefined (reading 'data')`, в том числе для адреса с обязательным завершающим `/`. Успешная автоматическая сдача fetch пока не подтверждена.
 
