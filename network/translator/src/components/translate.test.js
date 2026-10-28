@@ -24,6 +24,11 @@ test('keeps exactly one input and one h1 after the app shows a configuration err
   document.body.appendChild(container);
   try {
     await act(async () => { ReactDOM.render(<App />, container); });
+    const input = container.querySelector('input');
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(input, input.value + 'кот');
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
     expect(container.querySelector('[role="alert"]').textContent).toContain('REACT_APP_TRANSLATE_ENDPOINT');
     expect(container.querySelectorAll('input')).toHaveLength(1);
     expect(container.querySelectorAll('h1')).toHaveLength(1);

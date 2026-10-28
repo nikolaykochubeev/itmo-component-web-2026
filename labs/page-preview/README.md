@@ -2,14 +2,20 @@
 
 Браузерный веб-компонент `<page-preview>` получает HTML через `fetch`, извлекает `document.title` и первый `h1`, затем показывает ссылку и краткую карточку. Корневой импорт сам регистрирует элемент; дополнительный `register()` не требуется.
 
-Текущий проект готов для локальных проверок. Имя `course-48-page-preview-local` временное; `private: true` блокирует случайную публикацию. Для сдачи нужен аккаунт **npmjs.com** с принадлежащим владельцу scope.
+Пакет: [`@nikolay1010110101/page-preview`](https://www.npmjs.com/package/@nikolay1010110101/page-preview). Исходники: [GitHub](https://github.com/nikolaykochubeev/itmo-component-web-2026/tree/main/labs/page-preview). В браузере компонент работает без runtime-зависимостей и API-ключей.
 
 ## Импорт и интерфейс
 
-После подготовки и публикации пакета замените scope на свой:
+Установите точную версию:
+
+```sh
+npm install @nikolay1010110101/page-preview@1.0.1
+```
+
+Импортируйте пакет в приложении со сборщиком или import map:
 
 ```js
-import '@your-npm-login/page-preview';
+import '@nikolay1010110101/page-preview';
 ```
 
 ```html
@@ -17,6 +23,13 @@ import '@your-npm-login/page-preview';
 ```
 
 Bare import требует сборщик или import map. Локальная demo использует относительный путь к модулю, а не имя npm-пакета.
+
+На обычной HTML-странице можно использовать зафиксированную CDN-версию:
+
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/@nikolay1010110101/page-preview@1.0.1/src/page-preview.js"></script>
+<page-preview src="./example.html"></page-preview>
+```
 
 | Интерфейс | Поведение |
 | --- | --- |
@@ -34,7 +47,7 @@ Bare import требует сборщик или import map. Локальная 
 ## Локальная демонстрация и тесты
 
 ```sh
-cd /Users/nikolai/Projects/itmo-study/course-48/labs/page-preview
+cd labs/page-preview
 npm ci
 npx playwright install chromium
 npm test
@@ -43,36 +56,33 @@ npm run demo
 
 Откройте http://127.0.0.1:8000/demo/ . Первый компонент успешно загружается; второй демонстрирует ошибку 404. Кнопки меняют src, показывают отсутствие метаданных и безопасный вывод текста, похожего на HTML. Через `file://` модули и fetch проверять не следует.
 
-Тесты запускают реальный Chromium и временный HTTP-сервер с контролируемыми HTML-страницами. Проверяются самостоятельная регистрация, относительные URL, title/первый h1, HTML-сущности и внутренние пробелы, fallback, ошибки, loading, гонка запросов, независимость экземпляров, удаление/возврат и отсутствие вставленного HTML. Сервер использует только loopback. Если Chromium уже установлен в другом месте, тест поддерживает `CHROMIUM_EXECUTABLE_PATH=/полный/путь/к/chromium npm test`.
+Тесты запускают реальный Chromium и временный HTTP-сервер с контролируемыми HTML-страницами. Проверяются самостоятельная регистрация, один начальный fetch при upgrade элемента из HTML, относительные URL, title/первый h1, HTML-сущности и внутренние пробелы, fallback, ошибки, loading, гонка запросов, независимость экземпляров, удаление/возврат и отсутствие вставленного HTML. Сервер использует только loopback. Если Chromium уже установлен в другом месте, тест поддерживает `CHROMIUM_EXECUTABLE_PATH=/полный/путь/к/chromium npm test`.
 
-## Подготовка к публикации в npmjs
+## Выпуск новой версии
 
-1. Создайте собственный аккаунт npmjs.com, настройте требуемую двухфакторную проверку и выполните `npm login` лично. В этом окружении `npm whoami` возвращал `ENEEDAUTH`.
-2. Проверьте `npm whoami`. Используйте scope, который действительно принадлежит этому аккаунту. Затем выполните:
+Публиковать пакет может владелец npm-аккаунта `nikolay1010110101` или добавленный им maintainer. Проверьте `npm whoami`, затем повысьте версию и выполните проверки:
 
-   ```sh
-   npm run prepare:publish -- @your-npm-login/page-preview
-   npm install --package-lock-only --ignore-scripts
-   npm test
-   npm pack --dry-run
-   ```
+```sh
+npm version patch --no-git-tag-version
+npm test
+npm pack --dry-run
+npm publish --access public
+```
 
-   Команда меняет только имя пакета и снимает `private`. В архив входят `src`, README, LICENSE и manifest; demo, тесты, `.env` и node_modules не включаются. В manifest можно дополнить `author` и `repository` своими проверенными данными.
-
-3. Опубликуйте из своей учетной записи: `npm publish --access public`. Код подтверждения или запрос 2FA выполняет владелец аккаунта.
-4. Проверьте опубликованную версию: `npm view @your-npm-login/page-preview@1.0.0 version`, затем откройте `https://www.npmjs.com/package/@your-npm-login/page-preview`.
-5. В новом временном проекте выполните `npm install @your-npm-login/page-preview@1.0.0` и импортируйте пакет через сборщик/import map. После исправлений повышайте версию (`npm version patch`): ту же версию npm повторно не принимает.
-
-Инструкция курса прямо указывает npmjs.com, публичный npm-пакет и установку проверятором точной версии. Публикация в `npm.pkg.github.com` не подтверждает выполнение этого требования.
+В архив входят `src`, README, LICENSE и manifest; demo, тесты, `.env` и node_modules не включаются. При запросе 2FA подтверждение выполняет владелец аккаунта. После публикации проверьте точную версию через `npm view`. Одну комбинацию имени и версии npm повторно не принимает.
 
 ## Сдача
 
-После фактической публикации отправляется одна строка:
+Для версии 1.0.1 строка ответа:
 
 ```text
-@your-npm-login/page-preview@1.0.0
+@nikolay1010110101/page-preview@1.0.1
 ```
 
-Также нужна ссылка на репозиторий с исходниками и README. Scope в примерах — заполнитель, не имя опубликованного пакета. Форум: https://node-server.ru/m/mod/forum/view.php?id=4226 . Для отправки нужен доступ к группе курса.
+Также приложите [ссылку на исходники и README](https://github.com/nikolaykochubeev/itmo-component-web-2026/tree/main/labs/page-preview). Форум: https://node-server.ru/m/mod/forum/view.php?id=4226 . Для отправки нужен доступ к группе курса.
 
 Исходные [условия работы в Moodle](https://node-server.ru/m/pluginfile.php/16568/mod_forum/intro/page-preview-lab.pdf) включают критерии на 100 баллов. Их локальная копия сохранена в репозитории курса в `labs/instructions/`. Лицензия реализации — MIT, текст находится в LICENSE.
+
+## Изменения 1.0.1
+
+При регистрации компонента, уже присутствующего в HTML, начальная загрузка запускается один раз. Изменения src после подключения продолжают загружать новую страницу. Сценарий upgrade из разметки покрыт отдельным regression test.

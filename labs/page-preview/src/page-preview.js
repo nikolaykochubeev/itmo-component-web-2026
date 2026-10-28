@@ -20,6 +20,7 @@ template.innerHTML = `
   </article>`;
 
 export class PagePreview extends HTMLElement {
+  #connected = false;
   #controller = null;
   #generation = 0;
   #link;
@@ -39,16 +40,20 @@ export class PagePreview extends HTMLElement {
     this.#message = shadow.querySelector('[role="status"]');
   }
 
-  connectedCallback() { void this.#load(); }
+  connectedCallback() {
+    this.#connected = true;
+    void this.#load();
+  }
 
   disconnectedCallback() {
+    this.#connected = false;
     this.#generation += 1;
     this.#controller?.abort();
     this.#controller = null;
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'src' && oldValue !== newValue && this.isConnected) void this.#load();
+    if (name === 'src' && oldValue !== newValue && this.#connected && this.isConnected) void this.#load();
   }
 
   #isCurrent(generation) {

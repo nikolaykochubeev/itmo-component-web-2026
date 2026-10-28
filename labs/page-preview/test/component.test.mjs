@@ -28,6 +28,9 @@ before(async () => {
     if (path === '/package-entry.js') {
       res.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' });
       res.end(await readFile(new URL(packageEntry)));
+    } else if (path === '/pages/upgrade.html') {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(`<!doctype html><meta charset="utf-8"><page-preview id="preview" src="/normal"></page-preview><script>window.previewFetchCalls = 0; const originalFetch = window.fetch.bind(window); window.fetch = (...args) => { window.previewFetchCalls += 1; return originalFetch(...args); };</script><script type="importmap">${JSON.stringify({ imports: { [packageName]: '/package-entry.js' } })}</script><script type="module">import ${JSON.stringify(packageName)};</script>`);
     } else if (path === '/' || path === '/pages/index.html') {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(`<!doctype html><meta charset="utf-8"><script type="importmap">${JSON.stringify({ imports: { [packageName]: '/package-entry.js' } })}</script><script type="module">import ${JSON.stringify(packageName)};</script>`);
@@ -104,6 +107,13 @@ test('registers class, isolates instances and resolves a relative URL', async ()
   assert.equal((await card()).title, 'Книга & Кофе');
   assert.equal((await card('other')).title, 'Новый');
   assert.equal(await page.evaluate(() => document.querySelector('#preview').shadowRoot !== document.querySelector('#other').shadowRoot), true);
+});
+
+test('loads once when upgrading an element already present before registration', async () => {
+  await page.goto(`${origin}/pages/upgrade.html`);
+  await status('ready');
+  assert.equal(await page.evaluate(() => window.previewFetchCalls), 1);
+  assert.equal((await card()).title, 'Книга & Кофе');
 });
 
 test('uses fallbacks for absent and whitespace-only metadata', async () => {

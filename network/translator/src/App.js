@@ -6,7 +6,7 @@ import Translate from "./components/translate";
 
 export default function App() {
   const [language, setLanguage] = useState("en");
-  const [text, setText] = useState("Реакция");
+  const [text, setText] = useState("");
 
   return (
     <div>
