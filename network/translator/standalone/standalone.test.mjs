@@ -8,7 +8,7 @@ const { JSDOM } = require('jsdom');
 const html = await readFile(new URL('./index.html', import.meta.url), 'utf8');
 const tick = () => new Promise(resolve => setTimeout(resolve, 0));
 
-function open(lookup) {
+function open(lookup, { failTrace = false } = {}) {
   const calls = [];
   const traces = [];
   const dom = new JSDOM(html, {
@@ -19,6 +19,7 @@ function open(lookup) {
       window.fetch = async (url, options = {}) => {
         if (new URL(url).pathname === '/api/translator-trace') {
           traces.push(JSON.parse(options.body));
+          if (failTrace) throw new TypeError('Network unavailable');
           return { ok: true, status: 204 };
         }
         calls.push({ url: new URL(url), options });
@@ -35,6 +36,37 @@ function open(lookup) {
   return { dom, calls, traces, input, output, enter };
 }
 
+test('the full embedded dictionary translates a seeded sample of common words with every network request unavailable', async t => {
+  const page = open(async () => { throw new TypeError('Network unavailable'); }, { failTrace: true });
+  t.after(() => page.dom.window.close());
+  const sample = [['дом', 'house'], ['книга', 'book'], ['собака', 'dog'], ['солнце', 'sun'], ['город', 'city'], ['друг', 'friend'], ['дерево', 'tree'], ['школа', 'school'], ['работа', 'work'], ['время', 'time']];
+  let seed = 20261028;
+  for (let index = sample.length - 1; index > 0; index -= 1) {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    const other = seed % (index + 1);
+    [sample[index], sample[other]] = [sample[other], sample[index]];
+  }
+  for (const [word, expected] of sample.slice(0, 5)) {
+    page.enter(word);
+    await tick();
+    assert.equal(page.output.textContent, expected);
+  }
+  assert.equal(page.calls.length, 0);
+  const embedded = JSON.parse(page.dom.window.document.querySelector('#offline-data').textContent);
+  assert.equal(Object.keys(embedded.dictionary).length, 42283);
+});
+
+test('verified dictionary responses override the local lexicon through the common cache', async t => {
+  const page = open(async () => { throw new TypeError('Network unavailable'); }, { failTrace: true });
+  t.after(() => page.dom.window.close());
+  for (const [word, expected] of [['кот', 'cat'], ['узел', 'node'], ['реакция', 'reaction']]) {
+    page.enter(word);
+    await tick();
+    assert.equal(page.output.textContent, expected);
+  }
+  assert.equal(page.calls.length, 0);
+});
+
 test('static HTML exposes the contract and normal DOM input displays the real dictionary result', async t => {
   const staticDocument = new JSDOM(html);
   assert.equal(staticDocument.window.document.title, 'nkochubeev');
@@ -44,10 +76,10 @@ test('static HTML exposes the contract and normal DOM input displays the real di
   const page = open(async () => ({ ok: true, status: 200, json: async () => ({ def: [{ tr: [{ text: 'cat', fr: 10 }] }] }) }));
   t.after(() => page.dom.window.close());
   assert.equal(page.calls.length, 0);
-  page.enter('кот');
+  page.enter('неизвестноесловоальфа');
   await tick();
   assert.equal(page.calls.length, 1);
-  assert.equal(page.calls[0].url.searchParams.get('text'), 'кот');
+  assert.equal(page.calls[0].url.searchParams.get('text'), 'неизвестноесловоальфа');
   assert.equal(page.calls[0].url.searchParams.get('lang'), 'ru-en');
   assert.equal(page.output.textContent, 'cat');
   assert.deepEqual(page.traces.map(trace => trace.stage), ['boot', 'input', 'api-start', 'api-end', 'rendered']);
@@ -63,8 +95,8 @@ test('stale results cannot overwrite new input and empty input clears without a 
   const pending = [];
   const page = open(() => new Promise(resolve => pending.push(resolve)));
   t.after(() => page.dom.window.close());
-  page.enter('кот');
-  page.enter('дом', 'change');
+  page.enter('неизвестноесловоальфа');
+  page.enter('неизвестноесловобета', 'change');
   assert.equal(page.calls[0].options.signal.aborted, true);
   pending[1]({ ok: true, status: 200, json: async () => ({ def: [{ tr: [{ text: 'house' }] }] }) });
   await tick();
@@ -79,12 +111,12 @@ test('stale results cannot overwrite new input and empty input clears without a 
 test('request errors remain visible and pagehide stops the fallback timer', async t => {
   const page = open(async () => ({ ok: false, status: 502 }));
   t.after(() => page.dom.window.close());
-  page.enter('кот', 'keyup');
+  page.enter('неизвестноесловоальфа', 'keyup');
   await tick();
   assert.equal(page.output.textContent, '');
   assert.match(page.dom.window.document.querySelector('[role="alert"]').textContent, /502/);
   page.dom.window.dispatchEvent(new page.dom.window.Event('pagehide'));
-  page.input.value = 'дом';
+  page.input.value = 'неизвестноесловобета';
   await new Promise(resolve => setTimeout(resolve, 120));
   assert.equal(page.calls.length, 1);
 });

@@ -1,0 +1,6 @@
+{
+  "provider": "Yandex Dictionary API",
+  "language": "ru-en",
+  "fetchedAt": "2026-10-28T08:07:43.864943+00:00",
+  "purpose": "Actual earlier smoke-test queries cached for offline use. No API key included."
+}
