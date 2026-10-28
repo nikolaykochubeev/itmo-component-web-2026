@@ -4,7 +4,7 @@
 
 ## Автоматические задания
 
-Callback, Promise1, Promise2, JSX (1), JSX (2) и «Переводчик» приняты в Moodle с оценкой 100/100. Личный журнал отправок хранится отдельно от публикуемых исходников.
+Все семь автоматических заданий приняты в Moodle с оценкой 100/100: Callback, Promise1, Promise2, JSX (1), JSX (2), «Переводчик» и «Чекинатор fetch». Личный журнал отправок хранится отдельно от публикуемых исходников.
 
 Для автоматических заданий fetch и «Переводчик» нужны работающие публичные HTTPS-приложения. Реализации находятся в [network](network/README.md). Переводчик содержит автономный словарь на 42 283 слова; Яндекс.Словарь используется для неизвестных слов, ключ хранится только на сервере.
 
@@ -29,7 +29,7 @@ Callback, Promise1, Promise2, JSX (1), JSX (2) и «Переводчик» пр�
 
 Исходники сохранены в публичном репозитории [itmo-component-web-2026](https://github.com/nikolaykochubeev/itmo-component-web-2026). Docker-образ `ghcr.io/nikolaykochubeev/itmo-component-lab:307482` [доступен публично](https://github.com/nikolaykochubeev/itmo-component-web-2026/pkgs/container/itmo-component-lab), [workflow завершился успешно](https://github.com/nikolaykochubeev/itmo-component-web-2026/actions/runs/40611625286). Проверены анонимное скачивание без сохранённых учётных данных и запуск скачанного образа без сети с доступом к файловой системе только на чтение.
 
-[Сервис fetch](https://nkochubeev-fetch-course48.redcharm32.chatgpt.site/) развёрнут публично в Sites. `/login` возвращает точный логин, `/id/7` получил от учебного API значение `Игорь`. При отправке URL в Moodle проверятор возвращает `TypeError: Cannot read properties of undefined (reading 'data')`, в том числе для адреса с обязательным завершающим `/`. Успешная автоматическая сдача fetch пока не подтверждена.
+Чекинатор fetch принят 28.10.2026; оценка **100/100** подтверждена в Moodle. Для сдачи использован отдельный Node-сервер `network/checkinator-server.mjs` через [временный HTTPS-адрес](https://puzzle-usual-butler-televisions.trycloudflare.com/). Он возвращает логин по `/login`, а `/id/N` делает настоящий запрос к учебному API. Адрес зависит от запущенных локального сервера и Cloudflare Quick Tunnel. [Постоянный сервис Sites](https://nkochubeev-fetch-course48.redcharm32.chatgpt.site/) сохранён; проверка через него возвращала ошибку `.data`.
 
 [Клиент переводчика](https://nikolaykochubeev.github.io/itmo-component-web-2026/?v=d081791) принят проверятором; оценка **100/100** подтверждена в журнале Moodle 28.10.2026. [Та же автономная версия в Sites](https://nkochubeev-fetch-course48.redcharm32.chatgpt.site/) опубликована на главном адресе. HTML сразу содержит единственные `input` и `h1`, весь код и словарь встроены. Полный словарь FreeDict/WikDict распространяется с атрибуцией и лицензией CC BY-SA 3.0; кэш реальных запросов Яндекса не содержит ключа. Автономный перевод устраняет зависимость от API, который для части автоматических клиентов отвечает HTTP 403 / Cloudflare 1010. Неизвестные слова запрашиваются через прежний серверный прокси; React-версия сохранена в `network/translator`.
 
