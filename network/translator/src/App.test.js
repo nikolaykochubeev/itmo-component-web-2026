@@ -68,6 +68,30 @@ test('a native input event after direct value assignment requests and displays t
   expect(container.querySelector('h1').textContent).toBe('cat');
 });
 
+test('a direct value change without events is detected by the fallback timer and cleaned up on unmount', async () => {
+  jest.useFakeTimers();
+  const clearTimer = jest.spyOn(global, 'clearInterval');
+  try {
+    await act(async () => { ReactDOM.render(<App />, container); });
+    const input = container.querySelector('input');
+    input.value = 'кот';
+    expect(request).not.toHaveBeenCalled();
+
+    await act(async () => { jest.advanceTimersByTime(100); });
+
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(request.mock.calls[0][1].params).toEqual({ text: 'кот', lang: 'ru-en', ui: 'ru' });
+    expect(container.querySelector('h1').textContent).toBe('cat');
+    clearTimer.mockClear();
+    act(() => { ReactDOM.unmountComponentAtNode(container); });
+    expect(clearTimer).toHaveBeenCalledTimes(1);
+  } finally {
+    act(() => { ReactDOM.unmountComponentAtNode(container); });
+    clearTimer.mockRestore();
+    jest.useRealTimers();
+  }
+});
+
 test('React change and native input handlers report one change for the same event', async () => {
   const onChange = jest.fn();
   await act(async () => { ReactDOM.render(<Field value="" onChange={onChange} label="Word" />, container); });
