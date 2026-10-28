@@ -67,7 +67,7 @@ rm -rf "$anonymous_docker_config"
 docker image inspect --format '{{.Os}}/{{.Architecture}}' ghcr.io/nikolaykochubeev/itmo-component-lab:307482
 ```
 
-Для сдачи в Moodle отправляется **полное имя образа**, без URL репозитория и без `latest`. Образ должен существовать, скачиваться публично, а ИСУ в теге и stdout должны совпадать. Форум сдачи: https://node-server.ru/m/mod/forum/view.php?id=3918 . Сейчас аккаунту требуется доступ к группе курса.
+Для сдачи в Moodle отправляется **полное имя образа**, без URL репозитория и без `latest`. Образ должен существовать, скачиваться публично, а ИСУ в теге и stdout должны совпадать. Форум сдачи: https://node-server.ru/m/mod/forum/view.php?id=3918 . Ответ [опубликован в Moodle](https://node-server.ru/m/mod/forum/discuss.php?d=2629) в группе ALnew_2026.
 
 ## Почему это компонент
 

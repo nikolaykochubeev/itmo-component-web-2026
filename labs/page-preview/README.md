@@ -79,7 +79,7 @@ npm publish --access public
 @nikolay1010110101/page-preview@1.0.1
 ```
 
-Также приложите [ссылку на исходники и README](https://github.com/nikolaykochubeev/itmo-component-web-2026/tree/main/labs/page-preview). Форум: https://node-server.ru/m/mod/forum/view.php?id=4226 . Для отправки нужен доступ к группе курса.
+Также приложите [ссылку на исходники и README](https://github.com/nikolaykochubeev/itmo-component-web-2026/tree/main/labs/page-preview). Форум: https://node-server.ru/m/mod/forum/view.php?id=4226 . Ответ [опубликован в Moodle](https://node-server.ru/m/mod/forum/discuss.php?d=2630) в группе ALnew_2026.
 
 Исходные [условия работы в Moodle](https://node-server.ru/m/pluginfile.php/16568/mod_forum/intro/page-preview-lab.pdf) включают критерии на 100 баллов. Их локальная копия сохранена в репозитории курса в `labs/instructions/`. Лицензия реализации — MIT, текст находится в LICENSE.
 
