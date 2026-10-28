@@ -11,7 +11,7 @@
 ## Лабораторные
 
 - [Docker и файловая система](labs/docker-fs/README.md): образ `ghcr.io/nikolaykochubeev/itmo-component-lab:307482`.
-- [Кастомный Web Component](labs/page-preview/README.md): компонент предпросмотра страницы, пример использования и браузерные тесты.
+- [Кастомный Web Component](labs/page-preview/README.md): опубликованный `@nikolay1010110101/page-preview@1.0.1`, пример использования и браузерные тесты.
 
 Для сдачи в форумах Moodle требуется членство в группе курса. Публикация npm-пакета требует аккаунта на npmjs.com.
 
@@ -31,4 +31,6 @@
 
 [Сервис fetch](https://nkochubeev-fetch-course48.redcharm32.chatgpt.site/) развёрнут публично в Sites. `/login` возвращает точный логин, `/id/7` получил от учебного API значение `Игорь`. При отправке URL в Moodle проверятор возвращает `TypeError: Cannot read properties of undefined (reading 'data')`, в том числе для адреса с обязательным завершающим `/`. Успешная автоматическая сдача fetch пока не подтверждена.
 
-[Клиент переводчика](https://nikolaykochubeev.github.io/itmo-component-web-2026/) опубликован в GitHub Pages из `/docs`. Он обращается к серверному прокси Яндекс.Словаря. Ключ в клиентский JavaScript не включён. Для настоящего перевода требуется настроить личный `YANDEX_DICTIONARY_KEY` в серверной среде Sites; без него API отвечает HTTP 503.
+[Клиент переводчика](https://nikolaykochubeev.github.io/itmo-component-web-2026/) опубликован в GitHub Pages из `/docs`. [Та же рабочая сборка на домене API](https://nkochubeev-fetch-course48.redcharm32.chatgpt.site/translator/) доступна отдельно. Прокси Яндекс.Словаря настроен серверным секретом Sites; ключ не включён в исходники и клиентский JavaScript. Настоящий перевод `кот → cat` проверен через API и интерфейс. Начальное поле пустое. `/worldtime` успешно получает страницу сервера времени с `#theTime`.
+
+[Контрольная страница](https://nkochubeev-fetch-course48.redcharm32.chatgpt.site/translator-control/) явно помечена и после успешного API-запроса показывает фиксированный `node`. Это диагностический эксперимент по запросу владельца, не настоящий перевод. Проверятор отклонил и этот вариант; сама подстановка `node` не дала успешного результата. Рабочая программа сохранена отдельно.

@@ -6,6 +6,7 @@ import { createLookupParams, createProxyParams, readLookupResult } from "./dicti
 // CRA подставляет REACT_APP_* при сборке. Строка 7 заменяет Google key.
 const API_KEY = process.env.REACT_APP_YANDEX_DICTIONARY_KEY || "";
 const TRANSLATE_ENDPOINT = process.env.REACT_APP_TRANSLATE_ENDPOINT || "";
+const DIAGNOSTIC_TRANSLATION = process.env.REACT_APP_DIAGNOSTIC_TRANSLATION === "node" ? "node" : "";
 
 const doTranslation = async (input, languageCode, cancelToken) => {
   if (!TRANSLATE_ENDPOINT && !API_KEY) {
@@ -29,7 +30,7 @@ export default ({ language, text }) => {
     const cancelToken = axios.CancelToken.source();
     let active = true;
     doTranslation(text, language, cancelToken).then(
-      value => { if (active) setTranslated(value); },
+      value => { if (active) setTranslated(DIAGNOSTIC_TRANSLATION || value); },
       err => {
         if (active && !axios.isCancel(err)) {
           setError(err.response ? ((err.response.data && err.response.data.message) || `Yandex API: HTTP ${err.response.status}. Проверьте ключ и направление перевода.`) : err.message);
@@ -46,6 +47,7 @@ export default ({ language, text }) => {
     <div>
       <label className="label">Перевод</label>
       <h1 className="title" aria-live="polite">{translated}</h1>
+      {DIAGNOSTIC_TRANSLATION && <p>Контрольный вариант: фиксированный ответ {DIAGNOSTIC_TRANSLATION}</p>}
       {error && <p role="alert">{error}</p>}
       <p>Реализовано с помощью сервиса <a href="https://yandex.ru/dev/dictionary/">«API Яндекс.Словарь»</a>. Вводите слова или устойчивые выражения.</p>
     </div>

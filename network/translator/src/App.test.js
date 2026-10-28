@@ -5,6 +5,7 @@ import axios from 'axios';
 
 process.env.REACT_APP_TRANSLATE_ENDPOINT = 'https://dictionary.test/lookup';
 process.env.REACT_APP_YANDEX_DICTIONARY_KEY = '';
+process.env.REACT_APP_DIAGNOSTIC_TRANSLATION = '';
 const App = require('./App').default;
 
 let container;
@@ -49,6 +50,7 @@ test('ordinary typing sends the entered word without a prefilled prefix', async 
   expect(options.params).toEqual({ text: 'кот', lang: 'ru-en', ui: 'ru' });
   expect(input.value).toBe('кот');
   expect(container.querySelector('h1').textContent).toBe('cat');
+  expect(container.textContent).not.toContain('Контрольный вариант:');
 });
 
 test('an empty field makes no request and clearing a word clears the translation', async () => {

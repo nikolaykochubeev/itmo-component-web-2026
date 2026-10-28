@@ -24,11 +24,13 @@ PASS linux/amd64; read-only /data; network disabled; original ISU untouched
 
 ## Web Components
 
-`cd labs/page-preview && CHROMIUM_EXECUTABLE_PATH=... npm test`: **7 тестов, 7 passed, 0 failed**, реальный установленный Chromium (Playwright cache build 1217). Импорт проверен через имя пакета, его `exports` и import map, с самостоятельной регистрацией элемента.
+`cd labs/page-preview && CHROMIUM_EXECUTABLE_PATH=... npm test`: **8 тестов, 8 passed, 0 failed**, реальный установленный Chromium (Playwright cache build 1217). Импорт проверен через имя пакета, его `exports` и import map, с самостоятельной регистрацией элемента. Regression test воспроизвёл два начальных fetch при upgrade элемента из существующего HTML; версия 1.0.1 выполняет ровно один запрос.
 
 Сценарии: title и первый h1, entity/trim/внутренние пробелы, относительный URL, отдельные экземпляры, отсутствующая/пустая metadata, отсутствие src, HTTP/network error без uncaught exception, loading, быстрый переход slow→fast, отсоединение/возврат, безопасный текстовый вывод, удаление src.
 
-`npm pack --dry-run --json`: **4 ожидаемых файла**, архив 5609 байт: LICENSE, README.md, package.json, src/page-preview.js. В пакет не попадают demo, тесты, node_modules и `.env`. Пакет остается `private: true` под временным именем; публикации в npmjs не было.
+Проверенный архив версии 1.0.1: **4 ожидаемых файла**, 5513 байт: LICENSE, README.md, package.json, src/page-preview.js. В пакет не попадают demo, тесты, node_modules и `.env`.
+
+Опубликован `@nikolay1010110101/page-preview@1.0.1`. Registry tarball совпал с проверенным архивом: `sha512-k9Wlx8EH1mnUJqiL9K/x5MnI2ytPxhWGSKB0fngeptO5YBTBMwCn0H1I9QQ3WcICJajo7MelVrY+2BsaKUVz3Q==`. Свежая установка exact version успешна. CDN-модуль побайтно совпал с исходником. Проверены и installed import, и настоящий CDN late import: элемент из HTML upgraded на месте, ровно один fetch/HTTP-запрос, `ready`, корректные title/h1/link, без page errors. Версия 1.0.0 не изменена; сдавать следует исправленную 1.0.1.
 
 Демо запущено по HTTP, проверены `ready` для `example.html` и `error` для 404. Сохранен [скриншот](page-preview/demo-preview.png). Временный сервер после проверки завершен. Загрузка нового Chromium не понадобилась: тесты использовали уже установленный браузер. Для обычного нового окружения нужны `npm ci` и `npx playwright install chromium` из README.
 
@@ -42,4 +44,4 @@ PASS linux/amd64; read-only /data; network disabled; original ISU untouched
 
 Публикация GHCR выполняется через `GITHUB_TOKEN` workflow. Для npmjs нужны аккаунт владельца, его вход/2FA и принадлежащий ему scope. GitHub npm registry не заменяет явно указанный в PDF npmjs.
 
-Наличие и публичность образа GHCR после публикации, npmjs-публикация и ответы в форумах Moodle проверяются отдельно. Форумы требуют членство в группе курса.
+Публикации GHCR и npmjs проверены. Ответы в форумах Moodle пока отправить нельзя: аккаунт не включён в группу курса.
