@@ -13,7 +13,7 @@
 - [Docker и файловая система](labs/docker-fs/README.md): образ `ghcr.io/nikolaykochubeev/itmo-component-lab:307482`.
 - [Кастомный Web Component](labs/page-preview/README.md): компонент предпросмотра страницы, пример использования и браузерные тесты.
 
-В Moodle оба форума сдачи сейчас запрещают создавать темы, поскольку аккаунт не включён ни в одну группу курса. Публикация npm-пакета также требует аккаунта на npmjs.com.
+Для сдачи в форумах Moodle требуется членство в группе курса. Публикация npm-пакета требует аккаунта на npmjs.com.
 
 ## Доклад
 
@@ -27,6 +27,8 @@
 
 ## Размещение
 
-Исходники сохранены в закрытом репозитории [itmo-component-web-2026](https://github.com/nikolaykochubeev/itmo-component-web-2026). Docker-образ `ghcr.io/nikolaykochubeev/itmo-component-lab:307482` загружен с закрытым доступом, [workflow завершился успешно](https://github.com/nikolaykochubeev/itmo-component-web-2026/actions/runs/40611625286).
+Исходники сохранены в публичном репозитории [itmo-component-web-2026](https://github.com/nikolaykochubeev/itmo-component-web-2026). Docker-образ `ghcr.io/nikolaykochubeev/itmo-component-lab:307482` загружен, [workflow завершился успешно](https://github.com/nikolaykochubeev/itmo-component-web-2026/actions/runs/40611625286). Доступ к самому GHCR-пакету пока закрыт; его публичность настраивается отдельно в GitHub.
 
-[Сервис fetch](https://nkochubeev-fetch-course48.redcharm32.chatgpt.site) развёрнут в Sites с закрытым доступом. Публичный доступ для проверятора Moodle пока не включён. Серверный маршрут перевода оставлен заглушкой до разрешения на использование API и получения личного ключа.
+[Сервис fetch](https://nkochubeev-fetch-course48.redcharm32.chatgpt.site/) развёрнут публично в Sites. `/login` возвращает точный логин, `/id/7` получил от учебного API значение `Игорь`. При отправке URL в Moodle проверятор возвращает `TypeError: Cannot read properties of undefined (reading 'data')`, в том числе для адреса с обязательным завершающим `/`. Успешная автоматическая сдача fetch пока не подтверждена.
+
+[Клиент переводчика](https://nikolaykochubeev.github.io/itmo-component-web-2026/) опубликован в GitHub Pages из `/docs`. Он обращается к серверному прокси Яндекс.Словаря. Ключ в клиентский JavaScript не включён. Для настоящего перевода требуется настроить личный `YANDEX_DICTIONARY_KEY` в серверной среде Sites; без него API отвечает HTTP 503.
