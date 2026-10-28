@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>nkochubeev</title>
+  <style>
+    body { margin: 0; color: #172b36; background: #f5f8fa; font: 18px/1.5 system-ui, sans-serif; }
+    main { max-width: 36rem; margin: 10vh auto; padding: 2rem; }
+    label { display: block; margin-bottom: .5rem; }
+    input { box-sizing: border-box; width: 100%; padding: .8rem; border: 1px solid #8b9fae; border-radius: .5rem; font: inherit; }
+    input:focus { outline: 3px solid #bfdde9; border-color: #18677f; }
+    h1 { min-height: 1.5em; overflow-wrap: anywhere; font-size: 2rem; }
+    #message { color: #a02e24; }
+    .note { color: #506471; font-size: .85rem; }
+    a { color: #18677f; }
+  </style>
+</head>
+<body>
+  <main>
+    <label for="word">Русское слово</label>
+    <input id="word" type="text" autocomplete="off">
+    <p class="note">Английский перевод</p>
+    <h1 aria-live="polite"></h1>
+    <p id="message" role="alert"></p>
+    <p class="note">Перевод предоставлен сервисом <a href="https://yandex.ru/dev/dictionary/">«API Яндекс.Словарь»</a>.</p>
+  </main>
+  <script>
+    (() => {
+      'use strict';
+      const api = 'https://nkochubeev-fetch-course48.redcharm32.chatgpt.site/api';
+      const session = '8f5ce70f-9038-49b5-bc5d-fc304863ad40';
+      const injectedRunId = '__TRACE_RUN_ID__';
+      const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      function newRunId() {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, character => {
+          const random = window.crypto.getRandomValues(new Uint8Array(1))[0] & 15;
+          return (character === 'x' ? random : (random & 3) | 8).toString(16);
+        });
+      }
+      const runId = uuidPattern.test(injectedRunId) ? injectedRunId : newRunId();
+      const input = document.querySelector('input');
+      const output = document.querySelector('h1');
+      const message = document.querySelector('#message');
+      let lastValue = input.value;
+      let generation = 0;
+      let controller = null;
+
+      function trace(stage, details = {}) {
+        const payload = {
+          session, runId, stage,
+          inputLength: input.value.length,
+          outputLength: output.textContent.length,
+          status: details.status || 0,
+          errorName: details.errorName || '',
+          pathname: location.pathname,
+          inputs: document.querySelectorAll('input').length,
+          h1s: document.querySelectorAll('h1').length
+        };
+        try {
+          fetch(api + '/translator-trace', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            keepalive: true
+          }).catch(() => {});
+        } catch {}
+      }
+
+      function lookupResult(data) {
+        const translations = data && data.def && data.def[0] && data.def[0].tr;
+        let selected = translations && translations[0];
+        if (Array.isArray(translations)) {
+          for (const candidate of translations.slice(1)) {
+            const frequency = candidate && Number.isFinite(candidate.fr) ? candidate.fr : -Infinity;
+            const selectedFrequency = selected && Number.isFinite(selected.fr) ? selected.fr : -Infinity;
+            if (frequency > selectedFrequency) selected = candidate;
+          }
+        }
+        return selected && selected.text ? selected.text : 'Перевод не найден.';
+      }
+
+      async function processInput() {
+        const value = input.value;
+        if (value === lastValue) return;
+        lastValue = value;
+        const current = ++generation;
+        if (controller) controller.abort();
+        controller = null;
+        output.textContent = '';
+        output.setAttribute('aria-busy', 'false');
+        message.textContent = '';
+        trace('input');
+        const text = value.trim();
+        if (!text) { trace('rendered'); return; }
+
+        const activeController = new AbortController();
+        controller = activeController;
+        const params = new URLSearchParams({ text, lang: 'ru-en', ui: 'ru' });
+        let status = 0;
+        output.setAttribute('aria-busy', 'true');
+        trace('api-start');
+        try {
+          const response = await fetch(api + '/dictionary?' + params, { signal: activeController.signal });
+          if (current !== generation) return;
+          status = response.status;
+          if (!response.ok) {
+            trace('api-end', { status });
+            const error = new Error('Сервер перевода ответил HTTP ' + status + '.');
+            error.name = 'HttpError';
+            throw error;
+          }
+          const data = await response.json();
+          if (current !== generation) return;
+          trace('api-end', { status });
+          output.textContent = lookupResult(data);
+          output.setAttribute('aria-busy', 'false');
+          trace('rendered', { status });
+        } catch (error) {
+          if (current !== generation || activeController.signal.aborted) return;
+          output.setAttribute('aria-busy', 'false');
+          message.textContent = error.name === 'HttpError' ? error.message : 'Не удалось получить перевод. Попробуйте ещё раз.';
+          trace('error', { status, errorName: error.name || 'Error' });
+        }
+      }
+
+      for (const type of ['input', 'change', 'keyup']) input.addEventListener(type, processInput);
+      const timer = setInterval(processInput, 100);
+      window.addEventListener('pagehide', () => {
+        generation += 1;
+        if (controller) controller.abort();
+        clearInterval(timer);
+      }, { once: true });
+      window.addEventListener('error', () => trace('error', { errorName: 'RuntimeError' }));
+      window.addEventListener('unhandledrejection', event => trace('error', {
+        errorName: event.reason && event.reason.name || 'Error'
+      }));
+      trace('boot');
+    })();
+  </script>
+</body>
+</html>
